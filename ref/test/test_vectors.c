@@ -11,7 +11,7 @@
 #define NTESTS 10000
 
 
-/* Initital state after absorbing empty string 
+/* Initital state after absorbing empty string
  * Permute before squeeze is achieved by setting pos to SHAKE128_RATE */
 static keccak_state rngstate = {{0x1F, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (1ULL << 63), 0, 0, 0, 0}, SHAKE128_RATE};
 
@@ -67,7 +67,7 @@ int main(void)
     }
 
     // Decapsulation of invalid (random) ciphertexts
-    randombytes(ct, KYBER_CIPHERTEXTBYTES); 
+    randombytes(ct, KYBER_CIPHERTEXTBYTES);
     crypto_kem_dec(key_a, ct, sk);
     printf("Pseudorandom shared Secret A: ");
     for(j=0;j<CRYPTO_BYTES;j++)
