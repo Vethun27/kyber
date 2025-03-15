@@ -3,6 +3,7 @@
 #include <string.h>
 #include "kem.h"
 #include "randombytes.h"
+#include <unistd.h>
 
 #define NTESTS 1000
 
@@ -111,5 +112,6 @@ int main(void)
   printf("CRYPTO_PUBLICKEYBYTES:  %d\n",CRYPTO_PUBLICKEYBYTES);
   printf("CRYPTO_CIPHERTEXTBYTES: %d\n",CRYPTO_CIPHERTEXTBYTES);
 
+  getchar();
   return 0;
 }
