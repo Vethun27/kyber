@@ -2,3 +2,5 @@ tvecs1024
 tvecs512
 tvecs768
 .vscode/*.json
+ref/build/Debug/*.exe
+ref/build/Release/*.exe
