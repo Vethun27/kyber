@@ -6,3 +6,4 @@ tvecs768
 .vscode/c_cpp_properties.json
 ref/build/Debug/outDebug.exe
 ref/build/Release/outRelease.exe
+/.vscode
