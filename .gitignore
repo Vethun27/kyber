@@ -1,9 +1,9 @@
 tvecs1024
 tvecs512
 tvecs768
-.vscode/setting.json
-.vscode/launch.json
-.vscode/c_cpp_properties.json
-ref/build/Debug/outDebug.exe
-ref/build/Release/outRelease.exe
-/.vscode
+/.vscode/setting.json
+/.vscode/launch.json
+/.vscode/c_cpp_properties.json
+/ref/build/Debug/outDebug.exe
+/ref/build/Release/outRelease.exe
+
