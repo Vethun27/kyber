@@ -17,6 +17,7 @@
 #error "KYBER_K must be in {2,3,4}"
 #endif
 
+
 #define KYBER_N 256
 #define KYBER_Q 3329
 
@@ -32,7 +33,7 @@
 #define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 320)
 #elif KYBER_K == 3
 #define KYBER_ETA1 2
-#define KYBER_POLYCOMPRESSEDBYTES    128
+#define KYBER_POLYCOMPRESSEDBYTES    128 // Mit Encoding und Compressing bzw. Decoding Decompressing bsp: dv=4 für Kyber768 also für Encoding und Compressing der ouput byte Länge: dv*n/8 = 4*32 = 128
 #define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 320)
 #elif KYBER_K == 4
 #define KYBER_ETA1 2
