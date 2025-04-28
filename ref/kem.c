@@ -28,7 +28,7 @@ int crypto_kem_keypair_derand(uint8_t *pk,
 {
   indcpa_keypair_derand(pk, sk, coins);
   memcpy(sk+KYBER_INDCPA_SECRETKEYBYTES, pk, KYBER_PUBLICKEYBYTES);
-  hash_h(sk+KYBER_SECRETKEYBYTES-2*KYBER_SYMBYTES, pk, KYBER_PUBLICKEYBYTES);
+  hash_h(sk+KYBER_SECRETKEYBYTES-2*KYBER_SYMBYTES, pk, KYBER_PUBLICKEYBYTES); //TODO: add cpucycles mesurement
   /* Value z for pseudo-random output on reject */
   memcpy(sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES, coins+KYBER_SYMBYTES, KYBER_SYMBYTES);
   return 0;
@@ -160,11 +160,16 @@ int crypto_kem_dec(uint8_t *ss,
 
   fail = verify(ct, cmp, KYBER_CIPHERTEXTBYTES);
 
+  // if(fail)
+  //   printf("fail\n");
+
   /* Compute rejection key */
   rkprf(ss,sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES,ct);  //TODO: add cpucycles measurement
 
   /* Copy true key to return buffer if fail is false */
   cmov(ss,kr,KYBER_SYMBYTES,!fail);
+
+
 
   return 0;
 }
