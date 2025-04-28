@@ -159,10 +159,7 @@ int crypto_kem_dec(uint8_t *ss,
   indcpa_enc(cmp, buf, pk, kr+KYBER_SYMBYTES);
 
   fail = verify(ct, cmp, KYBER_CIPHERTEXTBYTES);
-
-  // if(fail)
-  //   printf("fail\n");
-
+  
   /* Compute rejection key */
   rkprf(ss,sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES,ct);  //TODO: add cpucycles measurement
 
