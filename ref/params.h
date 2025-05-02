@@ -2,7 +2,7 @@
 #define PARAMS_H
 
 #ifndef KYBER_K
-#define KYBER_K 3	/* Change this for different security strengths */
+#define KYBER_K 4	/* Change this for different security strengths */
 #endif
 
 
@@ -12,6 +12,8 @@
 #elif (KYBER_K == 3)
 #define KYBER_NAMESPACE(s) pqcrystals_kyber768_ref_##s
 #elif (KYBER_K == 4)
+#define KYBER_NAMESPACE(s) pqcrystals_kyber1024_ref_##s
+#elif (KYBER_K == 5)
 #define KYBER_NAMESPACE(s) pqcrystals_kyber1024_ref_##s
 #else
 #error "KYBER_K must be in {2,3,4}"
@@ -36,6 +38,10 @@
 #define KYBER_POLYCOMPRESSEDBYTES    128 // Mit Encoding und Compressing bzw. Decoding Decompressing bsp: dv=4 für Kyber768 also für Encoding und Compressing der ouput byte Länge: dv*n/8 = 4*32 = 128
 #define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 320)
 #elif KYBER_K == 4
+#define KYBER_ETA1 2
+#define KYBER_POLYCOMPRESSEDBYTES    160
+#define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 352)
+#elif KYBER_K == 5      // use this for other parameters
 #define KYBER_ETA1 2
 #define KYBER_POLYCOMPRESSEDBYTES    160
 #define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 352)
