@@ -7,6 +7,7 @@
 #include "verify.h"
 #include "symmetric.h"
 #include "randombytes.h"
+#include "cpucycles.h"
 /*************************************************
 * Name:        crypto_kem_keypair_derand
 *
@@ -24,11 +25,24 @@
 **************************************************/
 int crypto_kem_keypair_derand(uint8_t *pk,
                               uint8_t *sk,
-                              const uint8_t *coins)
+                              const uint8_t *coins,
+                              uint64_t* t, uint64_t* t_next)
 {
   indcpa_keypair_derand(pk, sk, coins);
   memcpy(sk+KYBER_INDCPA_SECRETKEYBYTES, pk, KYBER_PUBLICKEYBYTES);
-  hash_h(sk+KYBER_SECRETKEYBYTES-2*KYBER_SYMBYTES, pk, KYBER_PUBLICKEYBYTES); //TODO: add cpucycles mesurement
+
+  if(t && t_next)
+  {
+    *t = cpucycles();
+    hash_h(sk+KYBER_SECRETKEYBYTES-2*KYBER_SYMBYTES, pk, KYBER_PUBLICKEYBYTES);
+    *t_next = cpucycles();
+  }
+  else
+  {
+    hash_h(sk+KYBER_SECRETKEYBYTES-2*KYBER_SYMBYTES, pk, KYBER_PUBLICKEYBYTES);
+  }
+
+
   /* Value z for pseudo-random output on reject */
   memcpy(sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES, coins+KYBER_SYMBYTES, KYBER_SYMBYTES);
   return 0;
@@ -48,11 +62,12 @@ int crypto_kem_keypair_derand(uint8_t *pk,
 * Returns 0 (success)
 **************************************************/
 int crypto_kem_keypair(uint8_t *pk,
-                       uint8_t *sk)
+                       uint8_t *sk,
+                       uint64_t* t, uint64_t* t_next)
 {
   uint8_t coins[2*KYBER_SYMBYTES];
   randombytes(coins, 2*KYBER_SYMBYTES);
-  crypto_kem_keypair_derand(pk, sk, coins);
+  crypto_kem_keypair_derand(pk, sk, coins, t, t_next);
   return 0;
 }
 
@@ -76,7 +91,8 @@ int crypto_kem_keypair(uint8_t *pk,
 int crypto_kem_enc_derand(uint8_t *ct,
                           uint8_t *ss,
                           const uint8_t *pk,
-                          const uint8_t *coins)
+                          const uint8_t *coins,
+                          uint64_t* t, uint64_t* t_next)
 {
   uint8_t buf[2*KYBER_SYMBYTES];
   /* Will contain key, coins */
@@ -85,7 +101,18 @@ int crypto_kem_enc_derand(uint8_t *ct,
   memcpy(buf, coins, KYBER_SYMBYTES);
 
   /* Multitarget countermeasure for coins + contributory KEM */
-  hash_h(buf+KYBER_SYMBYTES, pk, KYBER_PUBLICKEYBYTES);   //TODO: add cpucycles mesurement
+
+  if (t && t_next)
+  {
+    *t = cpucycles();
+    hash_h(buf+KYBER_SYMBYTES, pk, KYBER_PUBLICKEYBYTES);
+    *t_next = cpucycles();
+  }
+  else
+  {
+    hash_h(buf+KYBER_SYMBYTES, pk, KYBER_PUBLICKEYBYTES);
+  }
+
   hash_g(kr, buf, 2*KYBER_SYMBYTES);
 
   /* coins are in kr+KYBER_SYMBYTES */
@@ -112,11 +139,12 @@ int crypto_kem_enc_derand(uint8_t *ct,
 **************************************************/
 int crypto_kem_enc(uint8_t *ct,
                    uint8_t *ss,
-                   const uint8_t *pk)
+                   const uint8_t *pk,
+                   uint64_t* t, uint64_t* t_next)
 {
   uint8_t coins[KYBER_SYMBYTES];
   randombytes(coins, KYBER_SYMBYTES);
-  crypto_kem_enc_derand(ct, ss, pk, coins);
+  crypto_kem_enc_derand(ct, ss, pk, coins, t, t_next);
   return 0;
 }
 
@@ -139,7 +167,8 @@ int crypto_kem_enc(uint8_t *ct,
 **************************************************/
 int crypto_kem_dec(uint8_t *ss,
                    const uint8_t *ct,
-                   const uint8_t *sk)
+                   const uint8_t *sk,
+                   uint64_t* t, uint64_t* t_next)
 {
   int fail;
   uint8_t buf[2*KYBER_SYMBYTES];
@@ -161,7 +190,17 @@ int crypto_kem_dec(uint8_t *ss,
   fail = verify(ct, cmp, KYBER_CIPHERTEXTBYTES);
   
   /* Compute rejection key */
-  rkprf(ss,sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES,ct);  //TODO: add cpucycles measurement
+  if(t && t_next)
+  {
+    *t = cpucycles();
+    rkprf(ss,sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES,ct);
+    *t_next = cpucycles();
+  }
+  else
+  {
+    rkprf(ss,sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES,ct); 
+  }
+ 
 
   /* Copy true key to return buffer if fail is false */
   cmov(ss,kr,KYBER_SYMBYTES,!fail);
