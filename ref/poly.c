@@ -21,10 +21,58 @@ void poly_compress(uint8_t r[KYBER_POLYCOMPRESSEDBYTES], const poly *a)
   unsigned int i,j;
   int16_t u;
   uint32_t d0;
+
+#if (KYBER_POLYCOMPRESSEDBYTES == 32)
   uint8_t t[8];
+  for (i = 0; i < KYBER_N / 8; i++) {
+    for (j = 0; j < 8; j++) {
+      u = a->coeffs[8 * i + j];
+      u += (u >> 15) & KYBER_Q;
+      d0 = u << 1;
+      d0 += 1664;
+      d0 *= 645073;
+      d0 >>= 31; 
+      t[j] = d0 & 0x01;
 
-#if (KYBER_POLYCOMPRESSEDBYTES == 128)
+    }
+    r[i] = t[0] | (t[1] << 1) | (t[2] << 2) | (t[3] << 3) | (t[4] << 4) | (t[5] << 5) | (t[6] << 6) | (t[7] << 7); 
+  } 
+#elif (KYBER_POLYCOMPRESSEDBYTES == 64)
+  uint8_t t[4];
+  for (i = 0; i < KYBER_N / 4; i++) {
+    for (j = 0; j < 4; j++) {
+      u = a->coeffs[4 * i + j];
+      u += (u >> 15) & KYBER_Q;
+      d0 = u << 2;
+      d0 += 1665;
+      d0 *= 322537;
+      d0 >>= 30; 
+      t[j] = d0 & 0x03;
 
+    }
+    r[i] = t[0] | (t[1] << 2) | (t[2] << 4) | (t[3] << 6);
+  }
+
+#elif (KYBER_POLYCOMPRESSEDBYTES == 96)
+  uint8_t t[8];
+  for (i = 0; i < KYBER_N / 8; i++) {
+    for (j = 0; j < 8; j++) {
+      u = a->coeffs[8 * i + j];
+      u += (u >> 15) & KYBER_Q;
+      d0 = u << 3;
+      d0 += 1664;
+      d0 *= 161269;
+      d0 >>= 29;
+      t[j] = d0 & 0x07;
+    }
+    r[0] = (t[0] >> 0) | (t[1] << 3) | (t[2] << 6);
+    r[1] = (t[2] >> 2) | (t[3] << 1) | (t[4] << 4) | (t[5] << 7);
+    r[2] = (t[5] >> 1) | (t[6] << 2) | (t[7] << 5);
+    r += 3;
+  }
+
+#elif (KYBER_POLYCOMPRESSEDBYTES == 128)
+  uint8_t t[8];
   for(i=0;i<KYBER_N/8;i++) {
     for(j=0;j<8;j++) {
       // map to positive standard representatives
@@ -45,6 +93,7 @@ void poly_compress(uint8_t r[KYBER_POLYCOMPRESSEDBYTES], const poly *a)
     r += 4;
   }
 #elif (KYBER_POLYCOMPRESSEDBYTES == 160)
+  uint8_t t[8];
   for(i=0;i<KYBER_N/8;i++) {
     for(j=0;j<8;j++) {
       // map to positive standard representatives
@@ -65,8 +114,49 @@ void poly_compress(uint8_t r[KYBER_POLYCOMPRESSEDBYTES], const poly *a)
     r[4] = (t[6] >> 2) | (t[7] << 3);
     r += 5;
   }
+
+#elif (KYBER_POLYCOMPRESSEDBYTES == 192)
+  uint8_t t[4];
+  for (i = 0; i < KYBER_N / 4; i++) {
+    for (j = 0; j < 4; j++) {
+      u = a->coeffs[4 * i + j];
+      u += (u >> 15) & KYBER_Q;
+      d0 = u << 6;
+      d0 += 1665;
+      d0 *= 20159;
+      d0 >>= 26;
+      t[j] = d0 & 0x3f;
+    }
+    r[0] = (t[0] >> 0) | (t[1] << 6);
+    r[1] = (t[1] >> 2) | (t[2] << 4);
+    r[2] = (t[2] >> 4) | (t[3] << 2);
+    r += 3;
+  }
+
+#elif (KYBER_POLYCOMPRESSEDBYTES == 224)
+  uint8_t t[8];
+  for (i = 0; i < KYBER_N / 8; i++) {
+    for (j = 0; j < 8; j++) {
+      u = a->coeffs[8 * i + j];
+      u += (u >> 15) & KYBER_Q;
+      d0 = u << 7;
+      d0 += 1664;
+      d0 *= 10080;
+      d0 >>= 25;
+      t[j] = d0 & 0x7f;
+    }
+    r[0] = (t[0] >> 0) | (t[1] << 7);
+    r[1] = (t[1] >> 1) | (t[2] << 6);
+    r[2] = (t[2] >> 2) | (t[3] << 5);
+    r[3] = (t[3] >> 3) | (t[4] << 4);
+    r[4] = (t[4] >> 4) | (t[5] << 3);
+    r[5] = (t[5] >> 5) | (t[6] << 2);
+    r[6] = (t[6] >> 6) | (t[7] << 1);
+    r += 7;
+  }
+
 #else
-#error "KYBER_POLYCOMPRESSEDBYTES needs to be in {128, 160}"
+#error "KYBER_POLYCOMPRESSEDBYTES must be in {32, 64, 96, 128, 160, 192, 224}"
 #endif
 }
 
@@ -83,8 +173,58 @@ void poly_compress(uint8_t r[KYBER_POLYCOMPRESSEDBYTES], const poly *a)
 void poly_decompress(poly *r, const uint8_t a[KYBER_POLYCOMPRESSEDBYTES])
 {
   unsigned int i;
+#if (KYBER_POLYCOMPRESSEDBYTES == 32)
+  unsigned int j;
+  uint8_t t[8];
+  for(i=0;i<KYBER_N/8;i++) {
+    t[0] = a[0];
+    t[1] = a[0] >> 1;
+    t[2] = a[0] >> 2;
+    t[3] = a[0] >> 3;
+    t[4] = a[0] >> 4;
+    t[5] = a[0] >> 5;
+    t[6] = a[0] >> 6;
+    t[7] = a[0] >> 7;
+    a += 1;
 
-#if (KYBER_POLYCOMPRESSEDBYTES == 128)
+    for(j=0;j<8;j++)
+      r->coeffs[8*i+j] = ((uint32_t)(t[j] & 0x01)*KYBER_Q + 1) >> 1;
+  }
+
+#elif (KYBER_POLYCOMPRESSEDBYTES == 64)
+  unsigned int j;
+  uint8_t t[4];
+  for(i=0;i<KYBER_N/4;i++) {
+    t[0] = a[0];
+    t[1] = a[0] >> 2;
+    t[2] = a[0] >> 4;
+    t[3] = a[0] >> 6;
+    a += 1;
+
+    for(j=0;j<4;j++)
+      r->coeffs[4*i+j] = ((uint32_t)(t[j] & 0x03)*KYBER_Q + 2) >> 2;
+  }
+  
+#elif (KYBER_POLYCOMPRESSEDBYTES == 96)
+  unsigned int j;
+  uint8_t t[8];
+  for(i=0;i<KYBER_N/8;i++) {
+
+    t[0] = a[0];
+    t[1] = (a[0] >> 3);
+    t[2] = (a[0] >> 6) | (a[1] << 2);
+    t[3] = (a[1] >> 1);
+    t[4] = (a[1] >> 4);
+    t[5] = (a[1] >> 7) | (a[2] << 1);
+    t[6] = (a[2] >> 2);
+    t[7] = (a[2] >> 5);
+    a += 3;
+
+    for(j=0;j<8;j++)
+      r->coeffs[8*i+j] = ((uint32_t)(t[j] & 0x07)*KYBER_Q + 4) >> 3;
+  }
+    
+#elif (KYBER_POLYCOMPRESSEDBYTES == 128)
   for(i=0;i<KYBER_N/2;i++) {
     r->coeffs[2*i+0] = (((uint16_t)(a[0] & 15)*KYBER_Q) + 8) >> 4;
     r->coeffs[2*i+1] = (((uint16_t)(a[0] >> 4)*KYBER_Q) + 8) >> 4;
@@ -94,7 +234,7 @@ void poly_decompress(poly *r, const uint8_t a[KYBER_POLYCOMPRESSEDBYTES])
   unsigned int j;
   uint8_t t[8];
   for(i=0;i<KYBER_N/8;i++) {
-    t[0] = (a[0] >> 0);
+    t[0] = (a[0] >> 0);                     
     t[1] = (a[0] >> 5) | (a[1] << 3);
     t[2] = (a[1] >> 2);
     t[3] = (a[1] >> 7) | (a[2] << 1);
@@ -107,8 +247,43 @@ void poly_decompress(poly *r, const uint8_t a[KYBER_POLYCOMPRESSEDBYTES])
     for(j=0;j<8;j++)
       r->coeffs[8*i+j] = ((uint32_t)(t[j] & 31)*KYBER_Q + 16) >> 5;
   }
+#elif (KYBER_POLYCOMPRESSEDBYTES == 192)
+  unsigned int j;  
+  uint8_t t[4]; 
+  for(i=0;i<KYBER_N/4;i++) {
+
+    t[0] = a[0];
+    t[1] = (a[0] >> 6) | (a[1] << 2);
+    t[2] = (a[1] >> 4) | (a[2] << 4);
+    t[3] = (a[2] >> 2);
+    a += 3;
+
+    for(j=0;j<4;j++)
+      r->coeffs[4*i+j] = ((uint32_t)(t[j] & 0x3F)*KYBER_Q + 32) >> 6;
+  }
+#elif (KYBER_POLYCOMPRESSEDBYTES == 224)
+  unsigned int j;  
+  uint8_t t[8];
+  
+  for(i=0;i<KYBER_N/8;i++) {
+    t[0] = (a[0] >> 0) & 0x7F;
+    t[1] = (a[0] >> 7) | (a[1] << 1);
+    t[2] = (a[1] >> 6) | (a[2] << 2);
+    t[3] = (a[2] >> 5) | (a[3] << 3);
+    t[4] = (a[3] >> 4) | (a[4] << 4);
+    t[5] = (a[4] >> 3) | (a[5] << 5);
+    t[6] = (a[5] >> 2) | (a[6] << 6);
+    t[7] = (a[6] >> 1);
+    a += 7;
+
+
+    for(j=0;j<8;j++)
+      r->coeffs[8*i+j] = ((uint32_t)(t[j] & 0x7F)*KYBER_Q + 64) >> 7;
+  }
+  
+  
 #else
-#error "KYBER_POLYCOMPRESSEDBYTES needs to be in {128, 160}"
+#error "KYBER_POLYCOMPRESSEDBYTES must be in {32, 64, 96, 128, 160, 192, 224}"
 #endif
 }
 
