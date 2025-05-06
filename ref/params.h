@@ -6,7 +6,7 @@
 #endif
 
 #ifndef TEST
-#define TEST 0	/* Change this for different security strengths */
+#define TEST 1	/* Change this for different security strengths */
 #endif
 
 /* Don't change parameters below this line */
@@ -36,7 +36,7 @@
 #define KYBER_ETA1 2
 #define KYBER_ETA2 2
 #define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 320)
-#define KYBER_POLYCOMPRESSEDBYTES    128 
+#define KYBER_POLYCOMPRESSEDBYTES    32 
 #endif
 
 #else
