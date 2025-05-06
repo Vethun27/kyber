@@ -56,20 +56,15 @@ static uint32_t load24_littleendian(const uint8_t x[3])
 
 void cbd1(poly *r, const uint8_t buf[KYBER_N / 4]) {
   unsigned int i, j;
-  uint8_t t, d;
+  uint8_t t;
   int16_t a, b;
 
   for (i = 0; i < KYBER_N / 4; i++) {
     t = buf[i];
-    d = t & 0x11;
-    d += (t >> 1) & 0x11;
-
-    d += (t >> 2) & 0x11;
-    d += (t >> 3) & 0x11;
 
     for (j = 0; j < 4; j++) {
-      a = (d >> (2 * j + 0)) & 0x1;
-      b = (d >> (2 * j + 1)) & 0x1;
+      a = (t >> (2 * j + 0)) & 0x1;
+      b = (t >> (2 * j + 1)) & 0x1;
       r->coeffs[4 * i + j] = a - b;
     }
   }
@@ -205,12 +200,12 @@ void cbd6(poly *r, const uint8_t buf[6 * KYBER_N / 4]) {
     t |= ((uint64_t)buf[6 * i + 4]) << 32;
     t |= ((uint64_t)buf[6 * i + 5]) << 40;
 
-    d = t & 0x210842108421ULL;
-    d += (t >> 1) & 0x210842108421ULL;
-    d += (t >> 2) & 0x210842108421ULL;
-    d += (t >> 3) & 0x210842108421ULL;
-    d += (t >> 4) & 0x210842108421ULL;
-    d += (t >> 5) & 0x210842108421ULL;
+    d = t & 0x041041041041ULL;
+    d += (t >> 1) & 0x041041041041ULL;
+    d += (t >> 2) & 0x041041041041ULL;
+    d += (t >> 3) & 0x041041041041ULL;
+    d += (t >> 4) & 0x041041041041ULL;
+    d += (t >> 5) & 0x041041041041ULL;
 
     for (j = 0; j < 4; j++) {
       a = (d >> (12 * j + 0)) & 0x3F;
@@ -235,13 +230,13 @@ void cbd7(poly *r, const uint8_t buf[7 * KYBER_N / 4]) {
     t |= ((uint64_t)buf[7 * i + 5]) << 40;
     t |= ((uint64_t)buf[7 * i + 6]) << 48;
 
-    d = t & 0x4210842108421ULL;
-    d += (t >> 1) & 0x4210842108421ULL;
-    d += (t >> 2) & 0x4210842108421ULL;
-    d += (t >> 3) & 0x4210842108421ULL;
-    d += (t >> 4) & 0x4210842108421ULL;
-    d += (t >> 5) & 0x4210842108421ULL;
-    d += (t >> 6) & 0x4210842108421ULL;
+    d = t & 0x02040810204081ULL;
+    d += (t >> 1) & 0x02040810204081ULL;
+    d += (t >> 2) & 0x02040810204081ULL;
+    d += (t >> 3) & 0x02040810204081ULL;
+    d += (t >> 4) & 0x02040810204081ULL;
+    d += (t >> 5) & 0x02040810204081ULL;
+    d += (t >> 6) & 0x02040810204081ULL;
 
     for (j = 0; j < 4; j++) {
       a = (d >> (14 * j + 0)) & 0x7F;
@@ -251,35 +246,6 @@ void cbd7(poly *r, const uint8_t buf[7 * KYBER_N / 4]) {
   }
 }
 
-void cbd10(poly *r, const uint8_t buf[10 * KYBER_N / 4]) {
-  unsigned int i, j;
-  __uint128_t t, d;
-  int16_t a, b;
-
-  for (i = 0; i < KYBER_N / 4; i++) {
-    t = 0;
-    for (j = 0; j < 10; j++) {
-      t |= (__uint128_t)buf[10 * i + j] << (8 * j);
-    }
-
-    d  = t & 0x00041041041041041ULL;
-    d += (t >> 1) & 0x00041041041041041ULL;
-    d += (t >> 2) & 0x00041041041041041ULL;
-    d += (t >> 3) & 0x00041041041041041ULL;
-    d += (t >> 4) & 0x00041041041041041ULL;
-    d += (t >> 5) & 0x00041041041041041ULL;
-    d += (t >> 6) & 0x00041041041041041ULL;
-    d += (t >> 7) & 0x00041041041041041ULL;
-    d += (t >> 8) & 0x00041041041041041ULL;
-    d += (t >> 9) & 0x00041041041041041ULL;
-
-    for (j = 0; j < 4; j++) {
-      a = (d >> (20 * j + 0)) & 0x3FF;
-      b = (d >> (20 * j + 10)) & 0x3FF;
-      r->coeffs[4 * i + j] = a - b;
-    }
-  }
-}
 
 
 
@@ -300,8 +266,6 @@ void poly_cbd_eta1(poly *r, const uint8_t buf[KYBER_ETA1*KYBER_N/4])
     cbd6(r, buf);
   #elif KYBER_ETA1 == 7
     cbd7(r, buf);  
-  #elif KYBER_ETA1 == 10
-    cbd10(r, buf);
   #else
   #error "This implementation requires eta1 in {1,2,3,4,5,6,7}"
   #endif
@@ -323,8 +287,6 @@ void poly_cbd_eta2(poly *r, const uint8_t buf[KYBER_ETA2*KYBER_N/4])
     cbd6(r, buf);
   #elif KYBER_ETA2 == 7
     cbd7(r, buf);  
-  #elif KYBER_ETA1 == 10
-    cbd10(r, buf);
   #else
   #error "This implementation requires eta1 in {1,2,3,4,5,6,7}"
   #endif
