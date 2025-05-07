@@ -56,9 +56,9 @@ int crypto_kem_keypair_derand_mod(uint8_t *pk,
   }
 
 
-/* Value z for pseudo-random output on reject */
-memcpy(sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES, coins+KYBER_SYMBYTES, KYBER_SYMBYTES);
-return 0;
+  /* Value z for pseudo-random output on reject */
+  memcpy(sk+KYBER_SECRETKEYBYTES-KYBER_SYMBYTES, coins+KYBER_SYMBYTES, KYBER_SYMBYTES);
+  return 0;
 }
 
 
