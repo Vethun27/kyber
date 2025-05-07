@@ -32,7 +32,7 @@
 
 #if TEST == 1
 
-#if KYBER_K == 3  // use this for other parameters based on Kyber768
+#if KYBER_K == 3  // use this for other variable parameters based on Kyber768
 #define KYBER_ETA1 2
 #define KYBER_ETA2 2
 #define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 320)
