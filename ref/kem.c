@@ -207,6 +207,16 @@ int crypto_kem_enc_mod(uint8_t *ct,
   return 0;
 }
 
+
+int crypto_kem_enc_mod_m(uint8_t *ct,
+                   uint8_t *ss,
+                   const uint8_t *pk,
+                   uint8_t* m)
+{
+  crypto_kem_enc_derand(ct, ss, pk, m);
+  return 0;
+}
+
 /*************************************************
 * Name:        crypto_kem_dec
 *
