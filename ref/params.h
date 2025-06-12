@@ -12,7 +12,8 @@
  * In the lines 51-55 the allowed values for the parameters can be set
  * 
  * 
- * Also the Makefile can be extended for the generation of executables for test_kyber and test_speed with customized parametersets.
+ * Also the Makefile can be used for the generation of executables for test_kyber and test_speed with customized parametersets. 
+ * (See line 68 and 89 in Makefile)
  * 
  */
 
