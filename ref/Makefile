@@ -17,6 +17,7 @@ test: \
   test/test_kyber512 \
   test/test_kyber768 \
   test/test_kyber1024 \
+  test/test_kyberX \
   test/test_vectors512 \
   test/test_vectors768 \
   test/test_vectors1024 \
@@ -25,6 +26,7 @@ speed: \
   test/test_speed512 \
   test/test_speed768 \
   test/test_speed1024 \
+  test/test_speedX \
 
 shared: \
   lib/libpqcrystals_kyber512_ref.so \
@@ -63,6 +65,9 @@ test/test_kyber768: $(SOURCESKECCAK) $(HEADERSKECCAK) test/test_kyber.c randomby
 test/test_kyber1024: $(SOURCESKECCAK) $(HEADERSKECCAK) test/test_kyber.c randombytes.c
 	$(CC) $(CFLAGS) -DKYBER_K=4 -DTEST=0 $(SOURCESKECCAK) randombytes.c test/test_kyber.c -o $@
 
+test/test_kyberX: $(SOURCESKECCAK) $(HEADERSKECCAK) test/test_kyber.c randombytes.c
+	$(CC) $(CFLAGS) -DKYBER_K=3 -DTEST=1 $(SOURCESKECCAK) randombytes.c test/test_kyber.c -o $@
+
 test/test_vectors512: $(SOURCESKECCAK) $(HEADERSKECCAK) test/test_vectors.c
 	$(CC) $(CFLAGS) -DKYBER_K=2 $(SOURCESKECCAK) test/test_vectors.c -o $@
 
@@ -81,6 +86,9 @@ test/test_speed768: $(SOURCESKECCAK) $(HEADERSKECCAK) test/cpucycles.h test/cpuc
 test/test_speed1024: $(SOURCESKECCAK) $(HEADERSKECCAK) test/cpucycles.h test/cpucycles.c test/speed_print.h test/speed_print.c test/test_speed.c randombytes.c
 	$(CC) $(CFLAGS) -DKYBER_K=4 -DTEST=0 $(SOURCESKECCAK) randombytes.c test/cpucycles.c test/speed_print.c test/test_speed.c -o $@
 
+test/test_speedX: $(SOURCESKECCAK) $(HEADERSKECCAK) test/cpucycles.h test/cpucycles.c test/speed_print.h test/speed_print.c test/test_speed.c randombytes.c
+	$(CC) $(CFLAGS) -DKYBER_K=3 -DTEST=1 $(SOURCESKECCAK) randombytes.c test/cpucycles.c test/speed_print.c test/test_speed.c -o $@
+
 nistkat/PQCgenKAT_kem512: $(SOURCESKECCAK) $(HEADERSKECCAK) nistkat/PQCgenKAT_kem.c nistkat/rng.c nistkat/rng.h
 	$(CC) $(NISTFLAGS) -DKYBER_K=2 -o $@ $(SOURCESKECCAK) nistkat/rng.c nistkat/PQCgenKAT_kem.c $(LDFLAGS) -lcrypto
 
@@ -95,12 +103,14 @@ clean:
 	-$(RM) -f test/test_kyber512
 	-$(RM) -f test/test_kyber768
 	-$(RM) -f test/test_kyber1024
+	-$(RM) -f test/test_kyberX
 	-$(RM) -f test/test_vectors512
 	-$(RM) -f test/test_vectors768
 	-$(RM) -f test/test_vectors1024
 	-$(RM) -f test/test_speed512
 	-$(RM) -f test/test_speed768
 	-$(RM) -f test/test_speed1024
+	-$(RM) -f test/test_speedX
 	-$(RM) -f nistkat/PQCgenKAT_kem512
 	-$(RM) -f nistkat/PQCgenKAT_kem768
 	-$(RM) -f nistkat/PQCgenKAT_kem1024

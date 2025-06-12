@@ -10,6 +10,10 @@
  * -DSPEED = x element {0,1} (0 to run the test_kyber and 1 to run test_speed)
  * -DTEST = 1
  * In the lines 51-55 the allowed values for the parameters can be set
+ * 
+ * 
+ * Also the Makefile can be extended for the generation of executables for test_kyber and test_speed with customized parametersets.
+ * 
  */
 
 #ifndef PARAMS_H
@@ -55,7 +59,7 @@
 
 #define KYBER_ETA1 2                                            //Values that can be set: 1, 2, 3, 4, 5, 6, 7
 #define KYBER_ETA2 2                                            //Values that can be set: 1, 2, 3, 4, 5, 6, 7
-#define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 192)            //Values that can be set: k*352, k*320, k*288, k*256, k*224, k*192, k*160 
+#define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 320)            //Values that can be set: k*352, k*320, k*288, k*256, k*224, k*192, k*160 
 #define KYBER_POLYCOMPRESSEDBYTES    128                        //Values that can be set: 224, 192, 160, 128, 96, 64, 32 
 /*
  * KYBER_POLYVECCOMPRESSEDBYTES sets d_u and is represented with k * x, where x = d_u * (n/8), where n = 256:
