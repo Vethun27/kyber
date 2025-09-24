@@ -50,6 +50,7 @@ void print_results(const char *s, uint64_t *t, size_t tlen) {
   printf("\n");
 }
 
+
 void print_results_hash(const char *s, uint64_t *t_out, uint64_t *t_in, size_t t_in_len) {
   size_t i;
   static uint64_t overhead = -1;
@@ -75,3 +76,4 @@ void print_results_hash(const char *s, uint64_t *t_out, uint64_t *t_in, size_t t
   printf("average: %llu cycles/ticks\n", (unsigned long long)average(t_out, t_in_len/2));
   printf("\n");
 }
+
