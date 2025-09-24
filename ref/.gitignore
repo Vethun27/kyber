@@ -14,4 +14,3 @@ nistkat/PQCgenKAT_kem768
 nistkat/PQCgenKAT_kem1024
 nistkat/*.req
 nistkat/*.rsp
-main.c
