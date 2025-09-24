@@ -10,12 +10,10 @@
     "-Wall",
     "-Wextra",
     "-Wpedantic",
+    "-Wmissing-prototypes",
+    "-Wredundant-decls",
     "-Wshadow",
-    "-Wformat=2",
-    "-Wcast-align",
-    "-Wconversion",
-    "-Wsign-conversion",
-    "-Wnull-dereference"
+    "-Wpointer-arith",
   ],
   "C_Cpp_Runner.msvcWarnings": [
     "/W4",
@@ -35,7 +33,11 @@
   ],
   "C_Cpp_Runner.enableWarnings": true,
   "C_Cpp_Runner.warningsAsError": false,
-  "C_Cpp_Runner.compilerArgs": [],
+  "C_Cpp_Runner.compilerArgs": [
+    "-DKYBER_K=3",
+    "-DTEST=0",
+    "-DSPEED=0"
+  ],
   "C_Cpp_Runner.linkerArgs": [],
   "C_Cpp_Runner.includePaths": [],
   "C_Cpp_Runner.includeSearch": [
