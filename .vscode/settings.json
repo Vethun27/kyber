@@ -13,7 +13,7 @@
     "-Wmissing-prototypes",
     "-Wredundant-decls",
     "-Wshadow",
-    "-Wpointer-arith",
+    "-Wpointer-arith"
   ],
   "C_Cpp_Runner.msvcWarnings": [
     "/W4",
