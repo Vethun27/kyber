@@ -25,7 +25,7 @@
 #endif
 
 #ifndef TEST
-#define TEST 1
+#define TEST 0
 #endif
 
 /* Don't change parameters below this line */
@@ -56,8 +56,6 @@
 #if TEST == 1
 // use this for other variable parameters
 
-#if KYBER_K == 3                                                //Values that can be set: any; Should match the value set for the compilerflag -DKYBER_K
-
 #define KYBER_ETA1 2                                            //Values that can be set: 1, 2, 3, 4, 5, 6, 7
 #define KYBER_ETA2 2                                            //Values that can be set: 1, 2, 3, 4, 5, 6, 7
 #define KYBER_POLYVECCOMPRESSEDBYTES (KYBER_K * 320)            //Values that can be set: k*352, k*320, k*288, k*256, k*224, k*192, k*160 
@@ -82,7 +80,7 @@
  * d_v = 1 corresponds to x =  32
  * 
  */
-#endif
+
 
 #else
 

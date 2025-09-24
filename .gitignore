@@ -9,3 +9,6 @@ tvecs1024
 tvecs512
 tvecs768
 
+ref/.vscode/settings.json
+ref/.vscode/c_cpp_properties.json
+ref/.vscode/launch.json
