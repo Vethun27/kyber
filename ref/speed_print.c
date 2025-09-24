@@ -49,3 +49,31 @@ void print_results(const char *s, uint64_t *t, size_t tlen) {
   printf("average: %llu cycles/ticks\n", (unsigned long long)average(t, tlen));
   printf("\n");
 }
+
+
+void print_results_hash(const char *s, uint64_t *t_out, uint64_t *t_in, size_t t_in_len) {
+  size_t i;
+  static uint64_t overhead = -1;
+
+  if(t_in_len < 2) {
+    fprintf(stderr, "ERROR: Need a least two cycle counts!\n");
+    return;
+  }
+
+  if(overhead  == (uint64_t)-1)
+    overhead = cpucycles_overhead();
+
+  int j = 0;
+  for(i=0;i<t_in_len;i+=2)
+  {
+    t_out[j] = t_in[i+1] - t_in[i] - overhead;
+    j++;
+  }
+   
+
+  printf("%s\n", s);
+  printf("median: %llu cycles/ticks\n", (unsigned long long)median(t_out, t_in_len/2));
+  printf("average: %llu cycles/ticks\n", (unsigned long long)average(t_out, t_in_len/2));
+  printf("\n");
+}
+

@@ -2,6 +2,16 @@
 #include "params.h"
 #include "cbd.h"
 
+
+void cbd1(poly *r, const uint8_t buf[KYBER_N / 4]);
+void cbd2(poly *r, const uint8_t buf[2*KYBER_N / 4]);
+void cbd3(poly *r, const uint8_t buf[3*KYBER_N / 4]);
+void cbd4(poly *r, const uint8_t buf[4*KYBER_N / 4]);
+void cbd5(poly *r, const uint8_t buf[5*KYBER_N / 4]);
+void cbd6(poly *r, const uint8_t buf[6*KYBER_N / 4]);
+void cbd7(poly *r, const uint8_t buf[7*KYBER_N / 4]);
+void cbd10(poly *r, const uint8_t buf[10*KYBER_N / 4]);
+
 /*************************************************
 * Name:        load32_littleendian
 *
@@ -33,7 +43,6 @@ static uint32_t load32_littleendian(const uint8_t x[4])
 *
 * Returns 32-bit unsigned integer loaded from x (most significant byte is zero)
 **************************************************/
-#if KYBER_ETA1 == 3
 static uint32_t load24_littleendian(const uint8_t x[3])
 {
   uint32_t r;
@@ -42,7 +51,25 @@ static uint32_t load24_littleendian(const uint8_t x[3])
   r |= (uint32_t)x[2] << 16;
   return r;
 }
-#endif
+
+
+
+void cbd1(poly *r, const uint8_t buf[KYBER_N / 4]) {
+  unsigned int i, j;
+  uint8_t t;
+  int16_t a, b;
+
+  for (i = 0; i < KYBER_N / 4; i++) {
+    t = buf[i];
+
+    for (j = 0; j < 4; j++) {
+      a = (t >> (2 * j + 0)) & 0x1;
+      b = (t >> (2 * j + 1)) & 0x1;
+      r->coeffs[4 * i + j] = a - b;
+    }
+  }
+}
+
 
 
 /*************************************************
@@ -55,7 +82,7 @@ static uint32_t load24_littleendian(const uint8_t x[3])
 * Arguments:   - poly *r: pointer to output polynomial
 *              - const uint8_t *buf: pointer to input byte array
 **************************************************/
-static void cbd2(poly *r, const uint8_t buf[2*KYBER_N/4])
+void cbd2(poly *r, const uint8_t buf[2*KYBER_N/4])
 {
   unsigned int i,j;
   uint32_t t,d;
@@ -85,8 +112,7 @@ static void cbd2(poly *r, const uint8_t buf[2*KYBER_N/4])
 * Arguments:   - poly *r: pointer to output polynomial
 *              - const uint8_t *buf: pointer to input byte array
 **************************************************/
-#if KYBER_ETA1 == 3
-static void cbd3(poly *r, const uint8_t buf[3*KYBER_N/4])
+void cbd3(poly *r, const uint8_t buf[3*KYBER_N/4])
 {
   unsigned int i,j;
   uint32_t t,d;
@@ -105,24 +131,163 @@ static void cbd3(poly *r, const uint8_t buf[3*KYBER_N/4])
     }
   }
 }
-#endif
+
+
+
+void cbd4(poly *r, const uint8_t buf[4 * KYBER_N / 4]) {
+  unsigned int i, j;
+  uint32_t t, d;
+  int16_t a, b;
+
+  for (i = 0; i < KYBER_N / 4; i++) {
+    t = buf[4 * i + 0];
+    t |= ((uint32_t)buf[4 * i + 1]) << 8;
+    t |= ((uint32_t)buf[4 * i + 2]) << 16;
+    t |= ((uint32_t)buf[4 * i + 3]) << 24;
+
+    d = t & 0x11111111;
+    d += (t >> 1) & 0x11111111;
+    d += (t >> 2) & 0x11111111;
+    d += (t >> 3) & 0x11111111;
+
+    for (j = 0; j < 4; j++) {
+      a = (d >> (8 * j + 0)) & 0xF;
+      b = (d >> (8 * j + 4)) & 0xF;
+      r->coeffs[4 * i + j] = a - b;
+    }
+  }
+}
+
+
+void cbd5(poly *r, const uint8_t buf[5 * KYBER_N / 4]) {
+  unsigned int i, j;
+  uint64_t t, d;
+  int16_t a, b;
+
+  for (i = 0; i < KYBER_N / 4; i++) {
+    t  = buf[5 * i + 0];
+    t |= ((uint64_t)buf[5 * i + 1]) << 8;
+    t |= ((uint64_t)buf[5 * i + 2]) << 16;
+    t |= ((uint64_t)buf[5 * i + 3]) << 24;
+    t |= ((uint64_t)buf[5 * i + 4]) << 32;
+
+    d = t & 0x0842108421ULL;
+    d += (t >> 1) & 0x0842108421ULL;
+    d += (t >> 2) & 0x0842108421ULL;
+    d += (t >> 3) & 0x0842108421ULL;
+    d += (t >> 4) & 0x0842108421ULL;
+
+    for (j = 0; j < 4; j++) {
+      a = (d >> (10 * j + 0)) & 0x1F;
+      b = (d >> (10 * j + 5)) & 0x1F;
+      r->coeffs[4 * i + j] = a - b;
+    }
+  }
+}
+
+
+
+void cbd6(poly *r, const uint8_t buf[6 * KYBER_N / 4]) {
+  unsigned int i, j;
+  uint64_t t, d;
+  int16_t a, b;
+
+  for (i = 0; i < KYBER_N / 4; i++) {
+    t  = buf[6 * i + 0];
+    t |= ((uint64_t)buf[6 * i + 1]) << 8;
+    t |= ((uint64_t)buf[6 * i + 2]) << 16;
+    t |= ((uint64_t)buf[6 * i + 3]) << 24;
+    t |= ((uint64_t)buf[6 * i + 4]) << 32;
+    t |= ((uint64_t)buf[6 * i + 5]) << 40;
+
+    d = t & 0x041041041041ULL;
+    d += (t >> 1) & 0x041041041041ULL;
+    d += (t >> 2) & 0x041041041041ULL;
+    d += (t >> 3) & 0x041041041041ULL;
+    d += (t >> 4) & 0x041041041041ULL;
+    d += (t >> 5) & 0x041041041041ULL;
+
+    for (j = 0; j < 4; j++) {
+      a = (d >> (12 * j + 0)) & 0x3F;
+      b = (d >> (12 * j + 6)) & 0x3F;
+      r->coeffs[4 * i + j] = a - b;
+    }
+  }
+}
+
+
+void cbd7(poly *r, const uint8_t buf[7 * KYBER_N / 4]) {
+  unsigned int i, j;
+  uint64_t t, d;
+  int16_t a, b;
+
+  for (i = 0; i < KYBER_N / 4; i++) {
+    t  = buf[7 * i + 0];
+    t |= ((uint64_t)buf[7 * i + 1]) << 8;
+    t |= ((uint64_t)buf[7 * i + 2]) << 16;
+    t |= ((uint64_t)buf[7 * i + 3]) << 24;
+    t |= ((uint64_t)buf[7 * i + 4]) << 32;
+    t |= ((uint64_t)buf[7 * i + 5]) << 40;
+    t |= ((uint64_t)buf[7 * i + 6]) << 48;
+
+    d = t & 0x02040810204081ULL;
+    d += (t >> 1) & 0x02040810204081ULL;
+    d += (t >> 2) & 0x02040810204081ULL;
+    d += (t >> 3) & 0x02040810204081ULL;
+    d += (t >> 4) & 0x02040810204081ULL;
+    d += (t >> 5) & 0x02040810204081ULL;
+    d += (t >> 6) & 0x02040810204081ULL;
+
+    for (j = 0; j < 4; j++) {
+      a = (d >> (14 * j + 0)) & 0x7F;
+      b = (d >> (14 * j + 7)) & 0x7F;
+      r->coeffs[4 * i + j] = a - b;
+    }
+  }
+}
+
+
+
+
 
 void poly_cbd_eta1(poly *r, const uint8_t buf[KYBER_ETA1*KYBER_N/4])
 {
-#if KYBER_ETA1 == 2
-  cbd2(r, buf);
-#elif KYBER_ETA1 == 3
-  cbd3(r, buf);
-#else
-#error "This implementation requires eta1 in {2,3}"
-#endif
+  #if KYBER_ETA1 == 1
+    cbd1(r, buf);
+  #elif KYBER_ETA1 == 2
+    cbd2(r, buf);
+  #elif KYBER_ETA1 == 3
+    cbd3(r, buf);
+  #elif KYBER_ETA1 == 4
+    cbd4(r, buf);
+  #elif KYBER_ETA1 == 5
+    cbd5(r, buf);
+  #elif KYBER_ETA1 == 6
+    cbd6(r, buf);
+  #elif KYBER_ETA1 == 7
+    cbd7(r, buf);  
+  #else
+  #error "This implementation requires eta1 in {1,2,3,4,5,6,7}"
+  #endif
 }
 
 void poly_cbd_eta2(poly *r, const uint8_t buf[KYBER_ETA2*KYBER_N/4])
 {
-#if KYBER_ETA2 == 2
-  cbd2(r, buf);
-#else
-#error "This implementation requires eta2 = 2"
-#endif
+  #if KYBER_ETA2 == 1
+    cbd1(r, buf);
+  #elif KYBER_ETA2 == 2
+    cbd2(r, buf);
+  #elif KYBER_ETA2 == 3
+    cbd3(r, buf);
+  #elif KYBER_ETA2 == 4
+    cbd4(r, buf);
+  #elif KYBER_ETA2 == 5
+    cbd5(r, buf);
+  #elif KYBER_ETA2 == 6
+    cbd6(r, buf);
+  #elif KYBER_ETA2 == 7
+    cbd7(r, buf);  
+  #else
+  #error "This implementation requires eta1 in {1,2,3,4,5,6,7}"
+  #endif
 }

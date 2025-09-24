@@ -1,0 +1,6 @@
+Add Linker option in C_Cp_Runner.linker:
+e.g.: 
+"C_Cpp_Runner.linkerArgs": [
+    "-lssl",
+    "-lcrypto"
+  ],
