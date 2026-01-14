@@ -12,7 +12,6 @@
 #include "poly.h"
 #include "cpucycles.h"
 #include "speed_print.h"
-#include "time.h"
 #include "symmetric.h"
 
 
